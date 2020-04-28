@@ -9,6 +9,16 @@
 ## Content of setting.gradle file ##
 rootProject.name = 'javaProjectToGradleProject'
 
+## Sonar for Java 8
+https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-7.8.zip
+
+## Some commands ##
+gradle wrapper
+gradle build
+gradlew test
+gradlew clean test --info
+gradlew clean sonarqube
+
 ## Content of build.gradle file with some details ##
 ```
 /*
@@ -19,147 +29,115 @@ rootProject.name = 'javaProjectToGradleProject'
  * User Manual available at https://docs.gradle.org/6.3/userguide/tutorial_java_projects.html
  */
 
-
 plugins {
     // Apply the java plugin to add support for Java
     id 'java'
 
-    // Apply the application plugin to add support for building a CLI application.
-    id 'application'
-}
-/*
-sourceSets {
-  main {
-    //if you truly want to override the defaults:
-    output.resourcesDir = file('src')
-    // Compiled Java classes should use this directory
-    java.outputDir = file('build/classes')
-  }
-}*/
-/*
-Customizing file and directory locations
-Imagine you have a legacy project that uses an src directory for the production 
-code and test for the test code. The conventional directory structure won’t work, 
-so you need to tell Gradle where to find the source files. You do that via source set configuration.
-
-Each source set defines where its source code resides, along with the resources 
-and the output directory for the class files.
-sourceSets {
-    main {
-         java {
-            srcDirs = ['src']
-         }
-    }
-
-    test {
-        java {
-            srcDirs = ['test']
-        }
-    }
-}
-Now Gradle will only search directly in src and test for the respective source code. 
-What if you don’t want to override the convention, but simply want to add an extra source 
-directory, perhaps one that contains some third-party source code you want to keep separate? 
-sourceSets {
-    main {
-        java {
-            srcDir 'thirdParty/src/main/java'
-        }
-    }
-}
-*/
-sourceSets {
-    main {
-         java {
-            srcDirs = ['src']
-         }
-    }
-
-    test {
-        java {
-            srcDirs = ['test']
-        }
-    }
-}
-
-/*
-sourceCompatibility
-Defines which language version of Java your source files should be treated as.
-
-targetCompatibility
-Defines the minimum JVM version your code should run on, i.e. it determines the 
-version of byte code the compiler generates.
-*/
-repositories {
-	
-	// If you want to use a (flat) filesystem directory as a repository
-	flatDir {
-		dirs 'libs'
-		//dirs 'lib1', 'lib2'
-	}
-    // Use jcenter for resolving dependencies.
-    // You can declare any Maven/Ivy/file repository here.
-    jcenter()
-}
-
-dependencies {
-	compile fileTree(dir: 'libs', include: '*.jar')
-	//runtime fileTree(dir: 'libs', include: '*.jar')
-    // This dependency is used by the application.
-    implementation 'com.google.guava:guava:28.2-jre'
-
-    // Use JUnit test framework
-    testImplementation 'junit:junit:4.12'
-}
-
-
-application {
-    // Define the main class for the application.
-    mainClassName = 'com.adcb.xyz.App'
+    // Apply the java plugin to add support for jacoco 
+    id 'jacoco'
     
+    //Gradle plugin to help analyzing projects with SonarQube
+    id "org.sonarqube" version "2.8"
 }
 
 version = '1.0.0'
-/*jar {
-    manifest {
-        attributes('Implementation-Title': project.name,
-                   'Implementation-Version': project.version)
+
+sourceSets {
+    main {
+         java {
+            srcDirs = ['src']
+         }
     }
-}*/
+
+    test {
+        java {
+            srcDirs = ['test']
+        }
+    }
+}
+
+repositories {
+	// If you want to use a (flat) filesystem directory as a repository
+	flatDir {
+		dirs 'lib'
+		//dirs 'lib1', 'lib2'
+	}
+}
+
+dependencies {
+	implementation fileTree(dir: 'lib', include: '*.jar')
+	testImplementation fileTree(dir: 'lib', include: '*.jar')
+	testRuntimeOnly fileTree(dir: 'lib', include: '*.jar')
+}
+
+jacoco {
+    //toolVersion = "0.8.5"
+    reportsDir = file("$buildDir/jacoco/adcb")
+    //applyTo run
+}
+
+jacocoTestReport {
+    File jacocoLibDir = file("lib")
+	jacocoClasspath = files { jacocoLibDir.listFiles() }
+}
+
+/*
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			limit {
+				counter = 'LINE'
+				value = 'COVEREDRATIO'
+				minimum = 0.02
+			}
+		}
+	}
+}
+*/
+
+test {
+    useJUnitPlatform()
+    jacoco {
+    	//append = false
+        //destinationFile = file("*/build/jacoco/jacocoTest.exec")
+        //classDumpDir = file("*/build/jacoco/classpathdumps")
+        destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
+        classDumpDir = file("$buildDir/jacoco/classpathdumps")
+    }
+}
+
+//https://docs.sonarqube.org/latest/analysis/scan/sonarscanner-for-gradle/
+sonarqube {
+    properties {
+    	property "sonar.sources", "src"
+    	property "sonar.tests", "test"
+    	property "sonar.sourceEncoding", "UTF-8"
+    	property 'sonar.projectName', project.name
+        property 'sonar.projectKey', "com.adcb.xyz:sonar-jacoco"
+        property 'sonar.host.url', 'http://localhost:9000'
+        //bb6615b17177fa6122ddf149c99d9d1802b25f93
+       	// property "sonar.exclusions", "/Generated.java"       	
+    }
+}
+
 //create a single Jar with all dependencies
 task fatJar(type: Jar) {
 	manifest {
         attributes 'Implementation-Title': 'Gradle Jar File Example for ADCB',  
-        	'Implementation-Version': version,
+        	//'Implementation-Version': version,
         	'Main-Class': 'com.adcb.xyz.App'
     }
-   	baseName = project.name// + '-all'
-   	
-   	//from fileTree('src') {
-      //  include '**/*/.class'
-    //}
-    //from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    
+   	archiveBaseName = project.name// + '-' + version    
     into('lib') {
-        from 'libs'
+        from 'lib'
     }
     with jar // The important part is with jar. Without it, the classes of this project are not included.
 }
 
-/*
-//The important part is with jar. Without it, the classes of this project are not included.
-task fatJar(type: Jar) {
-    classifier = 'all'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
-}
-
-*/
-
+test.finalizedBy jacocoTestReport
+ //,sonarqube
+//check.dependsOn jacocoTestCoverageVerification
+//build.finalizedBy sonarqube
 ```
 
-## Some commands ##
-gradle wrapper
-gradle build
-gradlew test
-gradlew clean test --info
+
