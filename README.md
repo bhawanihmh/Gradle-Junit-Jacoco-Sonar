@@ -11,17 +11,18 @@ rootProject.name = 'javaProjectToGradleProject'
 
 ## Sonar for Java 8
 https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-7.8.zip
-
-## Some commands ##
-*gradle wrapper
-*gradle build
-*gradlew test
-*gradlew clean test --info
-*gradlew clean sonarqube
-### for GRADLE_USER_HOME
-*gradle --gradle-user-home="F:/Work/javaProjectToGradleProject/.gradle" -d clean build
-*gradle -g "F:/Work/javaProjectToGradleProject/.gradle" -d
 ```
+## Some commands ##
+gradle wrapper
+gradle build
+gradlew test
+gradlew clean test --info
+gradlew clean sonarqube
+
+### for GRADLE_USER_HOME
+gradle --gradle-user-home="F:/Work/javaProjectToGradleProject/.gradle" -d clean build
+gradle -g "F:/Work/javaProjectToGradleProject/.gradle" -d
+
 org.gradle.caching=(true,false)
 org.gradle.daemon=(true,false)
 org.gradle.parallel=(true,false)
