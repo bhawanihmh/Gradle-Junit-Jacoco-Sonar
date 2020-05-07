@@ -45,6 +45,18 @@ org.gradle.jvmargs=-Xmx2g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryEr
 // https://docs.gradle.org/current/userguide/build_environment.html#sec:configuring_jvm_memory
 org.gradle.warning.mode=all
 ```
+## gradle-wrapper.properties
+```
+distributionBase=GRADLE_USER_HOME
+##distributionBase="F:/My Work New/WorkSpace-STS-3.9.9.RELEASE/javaProjectToGradleProject/.gradle"
+distributionPath=wrapper/dists
+##distributionUrl=gradle-6.3-bin.zip
+distributionUrl=file\://gradle/wrapper/gradle-6.3-bin.zip
+##distributionUrl=F:/My Work New/WorkSpace-STS-3.9.9.RELEASE/javaProjectToGradleProject/gradle/wrapper/gradle-6.3-bin.zip
+#zipStoreBase=F:/My Work New/WorkSpace-STS-3.9.9.RELEASE/javaProjectToGradleProject/.gradle
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+```
 ## Content of build.gradle file with some details ##
 ```
 /*
