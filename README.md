@@ -13,12 +13,37 @@ rootProject.name = 'javaProjectToGradleProject'
 https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-7.8.zip
 
 ## Some commands ##
-gradle wrapper
-gradle build
-gradlew test
-gradlew clean test --info
-gradlew clean sonarqube
+*gradle wrapper
+*gradle build
+*gradlew test
+*gradlew clean test --info
+*gradlew clean sonarqube
+### for GRADLE_USER_HOME
+*gradle --gradle-user-home="F:/Work/javaProjectToGradleProject/.gradle" -d clean build
+*gradle -g "F:/Work/javaProjectToGradleProject/.gradle" -d
+```
+org.gradle.caching=(true,false)
+org.gradle.daemon=(true,false)
+org.gradle.parallel=(true,false)
+org.gradle.logging.level=(quiet,warn,lifecycle,info,debug)
+Another use case is specifying JVM parameters like this:
+org.gradle.jvmargs=-Xmx2g -XX:MaxPermSize=256m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
 
+org.gradle.caching=true
+org.gradle.parallel=true
+org.gradle.caching.debug=false
+org.gradle.configureondemand=false
+org.gradle.daemon.idletimeout= 10800000
+org.gradle.console=auto
+org.gradle.java.home=(path to JDK home)
+org.gradle.warning.mode=(all,none,summary)
+org.gradle.workers.max=(max # of worker processes)
+org.gradle.priority=(low,normal)
+org.gradle.jvmargs=-Xmx2g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8<br>
+
+// https://docs.gradle.org/current/userguide/build_environment.html#sec:configuring_jvm_memory
+org.gradle.warning.mode=all
+```
 ## Content of build.gradle file with some details ##
 ```
 /*
